@@ -1,0 +1,43 @@
+# ------------------------------------
+# 1. VIRTUELE OMGEVINGEN (UV)
+# ------------------------------------
+# De virtuele omgeving (cruciaal!)
+.venv/
+venv/
+env/
+.env
+
+# ------------------------------------
+# 2. PYTHON COMPILED & BUILD ARTIFACTS
+# ------------------------------------
+# Bytecode bestanden (worden automatisch aangemaakt)
+**/__pycache__/
+*.pyc
+*.pyd
+
+# Build en distributie bestanden
+dist/
+build/
+*.egg-info/
+htmlcov/  # Code Coverage HTML rapporten
+
+# ------------------------------------
+# 3. TOOL CACHES & OUTPUT
+# ------------------------------------
+# Caches van type checker (Mypy) en test runner (Pytest)
+.mypy_cache/
+.pytest_cache/
+.coverage  # Pytest coverage bestand
+
+# Logs en output
+*.log
+*.out
+
+# ------------------------------------
+# 4. WINDOWS / IDE SPECIFIEK
+# ------------------------------------
+# Windows bestanden
+Thumbs.db
+
+# Visual Studio Code instellingen (voeg alleen toe als u dit gebruikt)
+.vscode/

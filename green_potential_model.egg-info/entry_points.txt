@@ -1,0 +1,2 @@
+[console_scripts]
+fullcheck = scripts.run_fullcheck:main

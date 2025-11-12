@@ -1,2 +1,0 @@
-result_images
-scripts

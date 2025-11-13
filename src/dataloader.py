@@ -26,3 +26,7 @@ def dataloader() -> geopandas:
     return pd.concat(
         tree_gdfs, ignore_index=True
     )  # TODO: when using multiple datasets make sure all columns have the same meaning
+
+
+def load_wijken():
+    ...  # delft wijken source: https://data.delft.nl/datasets/59174e8dc90c4f6ba028f985d4c0ac42_0/explore

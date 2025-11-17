@@ -25,7 +25,7 @@ def dataloader() -> geopandas:
 
     return pd.concat(
         tree_gdfs, ignore_index=True
-    )  # TODO: when using multiple datasets make sure all columns have the same meaning
+    )  # NOTE: when using multiple datasets make sure all columns have the same meaning
 
 
 def load_wijken():

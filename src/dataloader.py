@@ -16,9 +16,9 @@ def dataloader() -> geopandas:
     }
     tree_gdfs = []
     for city in filepaths.keys():
-        tree_gdf = geopandas.read_file(script_dir.parent / "data" / filepaths[city])[
-            ["BUURT", "WIJK"]
-        ]
+        tree_gdf = geopandas.read_file(
+            script_dir.parent / "data/trees" / filepaths[city]
+        )[["BUURT", "WIJK"]]
         tree_gdf["GEMEENTE"] = city
         tree_gdf[["GEMEENTE", "BUURT", "WIJK"]]
         tree_gdfs.append(tree_gdf)

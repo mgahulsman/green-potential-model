@@ -1,9 +1,9 @@
-from dataloader import dataloader
+from dataloaders.municipality_trees import municipality_tree_loader
 from tree_density import tree_density
 
 
 def main():
-    tree_data = dataloader()
+    tree_data = municipality_tree_loader()
     tree_density(tree_data)
 
 

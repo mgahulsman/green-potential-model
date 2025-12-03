@@ -1,0 +1,50 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "Naam": "Nieuwe Kerk",
+                "Type": "Monument",
+                "Bezoekers": 500
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    4.360194,
+                    52.012139
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "Naam": "Station Delft",
+                "Type": "Verkeer",
+                "Bezoekers": 1200
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    4.3574,
+                    52.0076
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "Naam": "TU Delft Aula",
+                "Type": "Onderwijs",
+                "Bezoekers": 800
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    4.3745,
+                    52.0039
+                ]
+            }
+        }
+    ]
+}

@@ -4,7 +4,7 @@ import geopandas as gpd
 import folium
 
 
-def visualize_data(page_name="index.html", open_browser=True):
+def visualize_data(page_name: str = "index.html", open_browser: bool = True) -> None:
     edges_gdf = gpd.read_file("data/roads/delft_edges.geojson")
     test_gdf = gpd.read_file("data/test.geojson")
 

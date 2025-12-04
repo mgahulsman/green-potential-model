@@ -4,7 +4,7 @@ import pandas as pd
 from src.config import UTM_CRS, WGS84_CRS, TREE_BUFFER_METER, BUFFER_RESOLUTIE
 
 
-def process_tree_data() -> Path:
+def process_tree_data() -> None:
     dir_path = Path.cwd()
     raw_path = dir_path / "data" / "raw" / "trees"
     processed_path = dir_path / "data" / "processed"
@@ -37,5 +37,3 @@ def process_tree_data() -> Path:
     )
 
     gdf_final_merged.to_file(output_file, driver="GeoJSON")
-
-    return output_file

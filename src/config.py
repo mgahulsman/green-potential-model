@@ -1,3 +1,6 @@
+# Main settings
+open_browser = True
+
 # Project-brede configuratie
 # TODO: understand what this does
 UTM_CRS = "EPSG:32631"

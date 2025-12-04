@@ -1,6 +1,7 @@
 from pathlib import Path
 import geopandas as gpd
 import pandas as pd
+from src.config import UTM_CRS, WGS84_CRS, BOOM_BUFFER_METER, BUFFER_RESOLUTIE
 
 
 def process_tree_data() -> Path:
@@ -14,20 +15,20 @@ def process_tree_data() -> Path:
 
     for city in filepaths.keys():
         tree_gdf = gpd.read_file(raw_path / filepaths[city])
-        # binnen_stad_bomen = tree_gdf.loc[tree_gdf["WIJK"] == "11 Binnenstad"]
         tree_gdfs.append(tree_gdf)
 
     final_gdf = pd.concat(tree_gdfs, ignore_index=True)
 
-    UTM_CRS = "EPSG:32631"
     gdf_geprojecteerd = final_gdf.to_crs(UTM_CRS)
 
-    geometrie_cirkels = gdf_geprojecteerd["geometry"].buffer(5, resolution=16)
+    geometrie_cirkels = gdf_geprojecteerd["geometry"].buffer(
+        BOOM_BUFFER_METER, resolution=BUFFER_RESOLUTIE
+    )
 
     merged_polygon = geometrie_cirkels.unary_union
 
     merged_gs = gpd.GeoSeries([merged_polygon], crs=UTM_CRS)
-    merged_gs_wgs84 = merged_gs.to_crs(epsg=4326)
+    merged_gs_wgs84 = merged_gs.to_crs(epsg=WGS84_CRS)
 
     gdf_final_merged = gpd.GeoDataFrame(
         data={"id": [1], "beschrijving": ["Gezamenlijk buffergebied"]},

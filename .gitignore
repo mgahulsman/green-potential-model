@@ -1,0 +1,25 @@
+.venv/
+venv/
+env/
+.env
+
+**/__pycache__/
+*.pyc
+*.pyd
+
+dist/
+build/
+*.egg-info/
+htmlcov/  # Code Coverage HTML rapporten
+
+.mypy_cache/
+.pytest_cache/
+.coverage  # Pytest coverage bestand
+.ruff_cache/
+
+*.log
+*.out
+
+Thumbs.db
+
+.vscode/

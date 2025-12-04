@@ -1,7 +1,7 @@
 from pathlib import Path
 import geopandas as gpd
 import pandas as pd
-from src.config import UTM_CRS, WGS84_CRS, BOOM_BUFFER_METER, BUFFER_RESOLUTIE
+from src.config import UTM_CRS, WGS84_CRS, TREE_BUFFER_METER, BUFFER_RESOLUTIE
 
 
 def process_tree_data() -> Path:
@@ -22,7 +22,7 @@ def process_tree_data() -> Path:
     gdf_geprojecteerd = final_gdf.to_crs(UTM_CRS)
 
     geometrie_cirkels = gdf_geprojecteerd["geometry"].buffer(
-        BOOM_BUFFER_METER, resolution=BUFFER_RESOLUTIE
+        TREE_BUFFER_METER, resolution=BUFFER_RESOLUTIE
     )
 
     merged_polygon = geometrie_cirkels.unary_union
@@ -31,7 +31,7 @@ def process_tree_data() -> Path:
     merged_gs_wgs84 = merged_gs.to_crs(epsg=WGS84_CRS)
 
     gdf_final_merged = gpd.GeoDataFrame(
-        data={"id": [1], "beschrijving": ["Gezamenlijk buffergebied"]},
+        data={"id": [1], "description": ["Joint restiction area"]},
         geometry=merged_gs_wgs84,
         crs=merged_gs_wgs84.crs,
     )

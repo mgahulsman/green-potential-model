@@ -1,5 +1,6 @@
 # Main settings
 open_browser = True
+H3_RESOLUTION = 10
 
 # Project-brede configuratie
 # TODO: understand what this does

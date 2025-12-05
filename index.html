@@ -1,47 +1,27 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Green Potential Model</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha20-g/f4zY3s79lW6nNqF5hXl0gU5D2hX7gX3jQ0U5TzP0Q6S2pX9gX4t0Q7R5zF2" crossorigin="" />
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha20-g/f4zY3s79lW6nNqF5hXl0gU5D2hX7gX3jQ0U5TzP0Q6S2pX9gX4t0Q7R5zF2" crossorigin="" />
     <style>
-        /* Zorg dat de kaart de hele pagina vult */
-        #map {
-            height: 100vh;
-            width: 100%;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-        }
+        #map { height: 100vh; width: 100%; }
+        body { margin: 0; padding: 0; }
     </style>
 </head>
-
 <body>
-
     <div id="map"></div>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha20-g/f4zY3s79lW6nNqF5hXl0gU5D2hX7gX3jQ0U5TzP0Q6S2pX9gX4t0Q7R5zF2" crossorigin=""></script>
-
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha20-g/f4zY3s79lW6nNqF5hXl0gU5D2hX7gX3jQ0U5TzP0Q6S2pX9gX4t0Q7R5zF2" crossorigin=""></script>
     <script>
-        // 3. Kaart initialiseren (gecentreerd op Delft)
-        var map = L.map('map').setView([52.00, 4.36], 13); // [Lat, Lon], Zoom
+        var map = L.map('map').setView([52.00, 4.36], 13);
 
-        // Voeg een standaard tegel-laag toe (de basiskaart)
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
+            attribution: '© OpenStreetMap contributors & © CARTO'
         }).addTo(map);
 
-        // Functie om GeoJSON asynchroon te laden en toe te voegen
-        function loadGeoJsonLayer(url, styleOptions, name) {
+        function loadGeoJsonLayer(url, styleOptions) {
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
@@ -49,25 +29,29 @@
                         style: function (feature) {
                             return styleOptions;
                         },
-                        // Als het punten zijn (bomen), gebruik dan een marker
                         pointToLayer: function (feature, latlng) {
                             if (feature.geometry.type === 'Point') {
                                 return L.circleMarker(latlng, styleOptions);
                             }
                         }
-                    }).addTo(map).bindPopup(name);
-                    console.log(`Laag ${name} geladen.`);
+                    }).addTo(map);
                 })
-                .catch(error => console.error(`Fout bij laden ${name}:`, error));
+                .catch(error => console.error(error));
         }
 
-        loadGeoJsonLayer(
-            'data/processed/merged_tree_area.geojson',
-            { color: 'blue', fillColor: 'blue', fillOpacity: 0.3, weight: 1 },
-            'Gezamenlijk Buffergebied'
-        );
+        loadGeoJsonLayer('data/processed/merged_building_area.geojson', {
+            color: '#555555',
+            fillColor: '#808080',
+            fillOpacity: 0.6,
+            weight: 1
+        });
 
+        loadGeoJsonLayer('data/processed/merged_tree_area.geojson', {
+            color: '#2E8B57',
+            fillColor: '#3CB371',
+            fillOpacity: 0.4,
+            weight: 0
+        });
     </script>
 </body>
-
 </html>

@@ -48,19 +48,28 @@
                 .catch(error => console.error(`Error loading GeoJSON from ${url}:`, error));
         }
 
+        loadGeoJsonLayer('data/processed/merged_tree_area.geojson', {
+            // color: 'red',
+            fillColor: 'green',
+            fillOpacity: 1,
+            weight: 1
+        });
+
         loadGeoJsonLayer('data/processed/merged_building_area_buffer.geojson', {
-            color: 'red',
+            color: '000',
             fillColor: '#808080',
             fillOpacity: 0,
             weight: 1
         });
 
-        loadGeoJsonLayer('data/processed/merged_tree_area.geojson', {
-            color: '#2E8B57',
-            fillColor: '#3CB371',
-            fillOpacity: 0.4,
-            weight: 0
+        loadGeoJsonLayer('data/processed/total_restriction_area.geojson', {
+            color: 'red',
+            fillColor: 'red',
+            fillOpacity: 0,
+            weight: 1
         });
+
+        concat_restriction_areas
     </script>
 </body>
 </html>

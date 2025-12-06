@@ -1,13 +1,13 @@
 from pathlib import Path
 import geopandas as gpd
-from src.config import UTM_CRS, WGS84_CRS
+from src.config import UTM_CRS, WGS84_CRS, BUILDING_BUFFER_METER
 
 
 def process_building_data() -> None:
     dir_path = Path.cwd()
     raw_path = dir_path / "data" / "raw" / "osm"
     processed_path = dir_path / "data" / "processed"
-    output_file = processed_path / "merged_building_area.geojson"
+    output_file = processed_path / "merged_building_area_buffer.geojson"
 
     filepath = "buildings.geojson"
 
@@ -15,6 +15,10 @@ def process_building_data() -> None:
 
     if building_gdf.crs != UTM_CRS:
         building_gdf = building_gdf.to_crs(UTM_CRS)
+
+    building_gdf["geometry"] = building_gdf.buffer(
+        BUILDING_BUFFER_METER, join_style="mitre"
+    )
 
     merged_polygon = building_gdf["geometry"].unary_union
 

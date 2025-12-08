@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Green Potential Model</title>
+    <title>Green Potential Model with Layer Control</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -22,54 +22,87 @@
     <script>
         var map = L.map('map').setView([52.00, 4.36], 13);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        var baseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap contributors & © CARTO'
         }).addTo(map);
 
-        function loadGeoJsonLayer(url, styleOptions) {
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status} for ${url}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    L.geoJson(data, {
-                        style: function (feature) {
-                            return styleOptions;
-                        },
-                        pointToLayer: function (feature, latlng) {
-                            return L.circleMarker(latlng, styleOptions);
+        var overlayLayers = {};
+
+        function loadGeoJsonLayer(url, name, styleOptions, addToMap = false) {
+            return new Promise((resolve, reject) => {
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status} for ${url}`);
                         }
-                    }).addTo(map);
-                })
-                .catch(error => console.error(`Error loading GeoJSON from ${url}:`, error));
+                        return response.json();
+                    })
+                    .then(data => {
+                        var geoJsonLayer = L.geoJson(data, {
+                            style: function (feature) {
+                                return styleOptions;
+                            },
+                            pointToLayer: function (feature, latlng) {
+                                return L.circleMarker(latlng, styleOptions);
+                            }
+                        });
+
+                        if (addToMap) {
+                            geoJsonLayer.addTo(map);
+                        }
+
+                        overlayLayers[name] = geoJsonLayer;
+                        resolve(geoJsonLayer);
+                    })
+                    .catch(error => {
+                        console.error(`Error loading GeoJSON from ${url}:`, error);
+                        reject(error);
+                    });
+            });
         }
 
-        loadGeoJsonLayer('data/processed/merged_tree_area.geojson', {
-            // color: 'red',
-            fillColor: 'green',
-            fillOpacity: 1,
-            weight: 1
-        });
+        Promise.all([
+            loadGeoJsonLayer(
+                'data/processed/merged_tree_area.geojson',
+                'Tree Area',
+                {
+                    fillColor: '#1A9988',
+                    fillOpacity: 1,
+                    weight: 1
+                },
+                true
+            ),
+            loadGeoJsonLayer(
+                'data/processed/merged_building_area_buffer.geojson',
+                'Building Buffer',
+                {
+                    fillColor: '#E9EDEE',
+                    fillOpacity: 1,
+                    weight: 1
+                },
+                true
+            ),
+            loadGeoJsonLayer(
+                'data/processed/total_restriction_area.geojson',
+                'Restriction Area',
+                {
+                    color: '#EB5600',
+                    fillColor: '#EB5600',
+                    fillOpacity: 0,
+                    weight: 3
+                },
+                false
+            )
+        ]).then(() => {
+            var baseMaps = {
+                "CARTO Light": baseLayer
+            };
 
-        loadGeoJsonLayer('data/processed/merged_building_area_buffer.geojson', {
-            color: '000',
-            fillColor: '#808080',
-            fillOpacity: 0,
-            weight: 1
+            L.control.layers(baseMaps, overlayLayers).addTo(map);
+        }).catch(error => {
+            console.error("One or more GeoJSON layers failed to load:", error);
         });
-
-        loadGeoJsonLayer('data/processed/total_restriction_area.geojson', {
-            color: 'red',
-            fillColor: 'red',
-            fillOpacity: 0,
-            weight: 1
-        });
-
-        concat_restriction_areas
     </script>
 </body>
 </html>

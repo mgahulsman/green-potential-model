@@ -1,6 +1,5 @@
-# Main settings
-open_browser = True
-H3_RESOLUTION = 10
+# Coarser H3 resolution for 'Uber Hexagons'
+UBERH3_RESOLUTION = 8
 
 # Project-brede configuratie
 # TODO: understand what this does

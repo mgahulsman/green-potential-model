@@ -1,14 +1,14 @@
-from pathlib import Path
+import logging
 import geopandas as gpd
 import pandas as pd
+from shared import Paths
 from src.config import UTM_CRS, WGS84_CRS, TREE_BUFFER_METER, BUFFER_RESOLUTIE
 
 
 def process_tree_data() -> None:
-    dir_path = Path.cwd()
-    raw_path = dir_path / "data" / "raw" / "trees"
-    processed_path = dir_path / "data" / "processed"
-    output_file = processed_path / "merged_tree_area.geojson"
+    paths = Paths()
+    raw_path = paths.raw / "trees"
+    output_file = paths.processed / "merged_tree_area.geojson"
 
     filepaths = {"Delft": "delft_trees.geojson"}
     tree_gdfs = []
@@ -37,3 +37,4 @@ def process_tree_data() -> None:
     )
 
     gdf_final_merged.to_file(output_file, driver="GeoJSON")
+    logging.info(f"Saved in {output_file}")

@@ -1,7 +1,8 @@
+import logging
 import os
-from pathlib import Path
 import geopandas as gpd
 import h3
+from shared import Paths
 from src.config import UTM_CRS, UBERH3_RESOLUTION
 
 
@@ -10,15 +11,18 @@ def generate_uber_h3_grid():
     Genereert een GeoJSON-bestand met Uber Hexagons (H3 grid met een grovere resolutie)
     op basis van het bounding box van de totale restrictiegebied.
     """
-    dir_path = Path.cwd()
-    processed_path = dir_path / "data" / "processed"
-    restriction_area_file = processed_path / "total_restriction_area.geojson"
-    output_file = processed_path / f"h3_grid_res{UBERH3_RESOLUTION}_uber.geojson"
+    paths = Paths()
+    restriction_area_file = paths.processed / "total_restriction_area.geojson"
+    output_file = (
+        paths.processed / "grid" / f"h3_grid_res{UBERH3_RESOLUTION}_uber.geojson"
+    )
 
     # Set the GeoJSON object size limit to 0 (no limit) to be able to read very large/complex geometries.
     os.environ["OGR_GEOJSON_MAX_OBJ_SIZE"] = "0"
     restriction_gdf = gpd.read_file(restriction_area_file)
 
+    # TODO: use the bbox of the municapllity since this doesn't include all edges,
+    # because the restriction area != the total area
     # Bounding box of restriction area
     minx, miny, maxx, maxy = restriction_gdf.total_bounds
 
@@ -31,6 +35,4 @@ def generate_uber_h3_grid():
     h3_gdf = gpd.GeoDataFrame({"geometry": shapes}, crs=UTM_CRS)
 
     h3_gdf.to_file(output_file, driver="GeoJSON")
-    print(
-        f"Succesvol H3 grid (resolutie {UBERH3_RESOLUTION}) gegenereerd naar {output_file}"
-    )
+    logging.info(f"Saved in {output_file}")

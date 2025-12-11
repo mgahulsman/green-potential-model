@@ -1,18 +1,17 @@
+import logging
 import os
-from pathlib import Path
 import geopandas as gpd
 import pandas as pd
+from shared import Paths
 from src.config import UTM_CRS, WGS84_CRS
 
 
 def concat_restriction_areas():
     """This function creates a union of restriction areas to reduce data."""
-    dir_path = Path.cwd()
-    processed_path = dir_path / "data" / "processed"
-    output_file = processed_path / "total_restriction_area.geojson"
-
-    tree_restriction_file = processed_path / "merged_tree_area.geojson"
-    building_restriction_file = processed_path / "merged_building_area_buffer.geojson"
+    paths = Paths()
+    tree_restriction_file = paths.processed / "merged_tree_area.geojson"
+    building_restriction_file = paths.processed / "merged_building_area_buffer.geojson"
+    output_file = paths.processed / "total_restriction_area.geojson"
 
     # Set the GeoJSON object size limit to 0 (no limit) to be able to read very large/complex geometries.
     os.environ["OGR_GEOJSON_MAX_OBJ_SIZE"] = "0"
@@ -40,3 +39,4 @@ def concat_restriction_areas():
     )
 
     gdf_final_merged.to_file(output_file, driver="GeoJSON")
+    logging.info(f"Saved in {output_file}")

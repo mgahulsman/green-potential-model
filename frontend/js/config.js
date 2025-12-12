@@ -45,11 +45,11 @@ const OVERLAY_LAYERS_CONFIG = [
     // **NIEUWE LAAG VOOR JE GRID/BUURTEN**
     {
         name: 'Neighborhood Grid',
-        url: '../data/processed/neighborhood_grid.geojson', // Zorg dat dit bestand bestaat
-        addToMap: false,
+        url: '../data/processed/grid/h3_grid_res8_uber.geojson', // Zorg dat dit bestand bestaat
+        addToMap: true,
         style: {
-            color: '#0070FF',
-            fillColor: '#0070FF',
+            color: 'red',
+            fillColor: 'red',
             fillOpacity: 0.2,
             weight: 2
         }

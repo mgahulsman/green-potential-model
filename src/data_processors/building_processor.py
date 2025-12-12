@@ -1,6 +1,6 @@
 import logging
 import geopandas as gpd
-from shared import Paths
+from src.shared import Paths
 from src.config import UTM_CRS, WGS84_CRS, BUILDING_BUFFER_METER
 
 

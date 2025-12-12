@@ -2,7 +2,7 @@ import logging
 import os
 import geopandas as gpd
 import h3
-from shared import Paths
+from src.shared import Paths
 from src.config import UTM_CRS, UBERH3_RESOLUTION
 
 

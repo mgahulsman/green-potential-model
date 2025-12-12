@@ -2,7 +2,7 @@ import logging
 import os
 import geopandas as gpd
 import pandas as pd
-from shared import Paths
+from src.shared import Paths
 from src.config import UTM_CRS, WGS84_CRS
 
 

@@ -42,4 +42,5 @@ def generate_uber_h3_grid():
     h3_gdf = gpd.GeoDataFrame({"geometry": shapes}, crs=UTM_CRS)
 
     h3_gdf.to_file(output_file, driver="GeoJSON")
-    logging.info(f"Saved in {output_file}")
+
+    logging.info(f"Saved {output_file.relative_to(paths.dir_path)}")

@@ -39,4 +39,4 @@ def concat_restriction_areas():
     )
 
     gdf_final_merged.to_file(output_file, driver="GeoJSON")
-    logging.info(f"Saved in {output_file}")
+    logging.info(f"Saved {output_file.relative_to(paths.dir_path)}")

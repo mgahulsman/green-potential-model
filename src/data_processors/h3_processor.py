@@ -26,7 +26,7 @@ def generate_uber_h3_grid():
     # Bounding box of restriction area
     minx, miny, maxx, maxy = restriction_gdf.total_bounds
 
-    # Lat, Long switch, since leaflet uses Lat, Lon and h3 Lon, Lat
+    # Lon, Lan switch, since leaflet uses Lat, Lon and h3 Lon, Lat
     bbox_polygon = h3.LatLngPoly(
         [
             (miny, minx),  # (Lat, Lon)
@@ -36,10 +36,6 @@ def generate_uber_h3_grid():
             (miny, minx),  # (Lat, Lon)
         ]
     )
-
-    # bbox_polygon = h3.LatLngPoly(
-    #     [(minx, miny), (minx, maxy), (maxx, maxy), (maxx, miny), (minx, miny)]
-    # )
 
     h3_indices = h3.h3shape_to_cells(bbox_polygon, res=UBERH3_RESOLUTION)
     shapes = [h3.cells_to_h3shape([h3_index]) for h3_index in h3_indices]

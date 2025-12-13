@@ -5,11 +5,13 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "fastapi>=0.124.2",
     "geodatasets>=2024.8.0",
     "geopandas>=1.1.1",
     "h3>=4.3.1",
     "matplotlib>=3.10.7",
     "mypy>=1.18.2",
+    "uvicorn>=0.38.0",
 ]
 
 [dependency-groups]

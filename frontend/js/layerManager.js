@@ -17,11 +17,28 @@ function loadGeoJsonLayer(layerConfig) {
             .then(data => {
                 var geoJsonLayer = L.geoJson(data, {
                     style: function (feature) {
-                        // Kan uitgebreid worden voor datagedreven styling (bijv. op basis van feature.properties)
-                        return layerConfig.style;
+                        // Haal de basisstijl op uit config.js
+                        const baseStyle = layerConfig.style; //
+
+                        // Controleer of de 'cel_color' eigenschap bestaat in de GeoJSON feature
+                        if (feature.properties && feature.properties.cel_color) {
+                            const dataColor = feature.properties.cel_color; //
+
+                            // Return een nieuwe stijl: kopieer de basisstijl, maar overschrijf de kleuren
+                            return {
+                                ...baseStyle, // Behoud eigenschappen zoals weight en fillOpacity
+                                color: dataColor, // Gebruik de kleur uit de data voor de rand
+                                fillColor: dataColor // Gebruik de kleur uit de data voor de vulling
+                            };
+                        }
+
+                        // Val terug op de standaardstijl uit config.js
+                        return baseStyle;
                     },
                     pointToLayer: function (feature, latlng) {
-                        return L.circleMarker(latlng, layerConfig.style);
+                        // De stijl wordt opgehaald via de bovenstaande functie
+                        const style = this.options.style(feature);
+                        return L.circleMarker(latlng, style);
                     },
                     onEachFeature: function(feature, layer) {
                         // Optioneel: voeg een popup toe

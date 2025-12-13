@@ -55,3 +55,31 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeMap();
     loadAndControlLayers();
 });
+
+
+document.getElementById('run-btn').addEventListener('click', () => {
+    const btn = document.getElementById('run-btn');
+    btn.disabled = true;
+    btn.innerText = "Bezig met rekenen...";
+
+    // Gebruik de sync versie als je wilt wachten tot het klaar is om de kaart te verversen
+    fetch('http://127.0.0.1:8000/run-analysis-sync', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data.message);
+        alert("Klaar! De kaart wordt ververst.");
+
+        // Herlaad de pagina of herlaad specifiek de lagen
+        location.reload();
+    })
+    .catch(error => {
+        console.error('Er ging iets mis:', error);
+        alert("Fout tijdens uitvoeren analyse.");
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerText = "Draai Analyse";
+    });
+});

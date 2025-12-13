@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 import geopandas as gpd
 import h3
 from src.shared import Paths
@@ -38,9 +39,18 @@ def generate_uber_h3_grid():
     )
 
     h3_indices = h3.h3shape_to_cells(bbox_polygon, res=UBERH3_RESOLUTION)
-    shapes = [h3.cells_to_h3shape([h3_index]) for h3_index in h3_indices]
-    h3_gdf = gpd.GeoDataFrame({"geometry": shapes}, crs=UTM_CRS)
 
+    data = []
+    # color palette: https://coolors.co/palette/f94144-f3722c-f8961e-f9844a-f9c74f-90be6d-43aa8b-4d908e-577590-277da1
+    colors = ["#f94144", "#F3722C", "#F9C74F", "#577590", "#43AA8B"]
+    for h3_index in h3_indices:
+        shape = h3.cells_to_h3shape([h3_index])
+        data.append({"geometry": shape, "cel_color": random.choice(colors)})
+
+    h3_gdf = gpd.GeoDataFrame(data, crs=UTM_CRS)
     h3_gdf.to_file(output_file, driver="GeoJSON")
-
     logging.info(f"Saved {output_file.relative_to(paths.dir_path)}")
+
+
+if __name__ == "__main__":
+    generate_uber_h3_grid()

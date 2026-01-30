@@ -34,7 +34,7 @@ def select_restriction_infra(df):
 
 
 def process_restrictions(buffer_settings):
-    base_folder = "C:/Users/maart/EigenMappen/Studie/laatste_bachelor_semester/bep/green-potential-model/new_structure/data/"
+    base_folder = "C:/Users/maart/EigenMappen/Studie/laatste_bachelor_semester/bep/green-potential-model/data/"
     raw_path = base_folder + "raw/restrictions/"
 
     municipality_gdf = gpd.read_file(

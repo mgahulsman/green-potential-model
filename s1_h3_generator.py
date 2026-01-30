@@ -5,7 +5,7 @@ import h3
 
 
 def generate_h3_grid(resolutions: list[int]):
-    base_folder = "C:/Users/maart/EigenMappen/Studie/laatste_bachelor_semester/bep/green-potential-model/new_structure/data/"
+    base_folder = "C:/Users/maart/EigenMappen/Studie/laatste_bachelor_semester/bep/green-potential-model/data/"
     municipality_file = base_folder + "raw/grid/delft_municipality.geojson"
 
     # Set the GeoJSON object size limit to 0 (no limit) to be able to read very large/complex geometries.

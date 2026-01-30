@@ -133,7 +133,7 @@ def run_worker(grid_file, restriction_file, output_dir):
 
 def run_s3_analysis():
     base_path = Path(
-        "C:/Users/maart/EigenMappen/Studie/laatste_bachelor_semester/bep/green-potential-model/new_structure/data"
+        "C:/Users/maart/EigenMappen/Studie/laatste_bachelor_semester/bep/green-potential-model/data"
     )
     grid_dir = base_path / "raw/grid"
     restr_file = base_path / "processed/restrictions/restr_w000b020r000t200.geojson"

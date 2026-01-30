@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>GP - Grids</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <nav><a href="index.html">Home</a><a href="grids.html">Grids</a><a href="restrictions.html">Restrictions</a><a
+            href="results.html">Results</a></nav>
+    <div class="dashboard">
+        <h3>Spatial Units</h3>
+        <div class="control-group">
+            <label>Select Resolution</label>
+            <select id="res-select">
+                <option value="delft_municipality">Municipality</option>
+                <option value="delft_districts" selected>Districts</option>
+                <option value="delft_neighborhoods">Neighborhoods</option>
+                <option value="res_8">H3 Res 8 (~531m)</option>
+                <option value="res_9">H3 Res 9 (~201m)</option>
+                <option value="res_10">H3 Res 10 (~76m)</option>
+            </select>
+        </div>
+        <p style="font-size: 0.8rem; color: #666;">Higher resolutions reveal local variances masked by administrative
+            boundaries[cite: 173].</p>
+    </div>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/layerManager.js"></script>
+    <script>
+        const map = L.map('map').setView(MAP_SETTINGS.center, MAP_SETTINGS.zoom);
+        L.tileLayer(MAP_SETTINGS.tiles).addTo(map);
+        let layer;
+        async function update() {
+            if (layer) map.removeLayer(layer);
+            const data = await fetchGeoJSON(DATA_PATHS.grids(document.getElementById('res-select').value));
+            layer = L.geoJson(data, { style: { color: '#34495e', weight: 1, fillOpacity: 0.1 } }).addTo(map);
+        }
+        document.getElementById('res-select').onchange = update;
+        update();
+    </script>
+</body>
+
+</html>

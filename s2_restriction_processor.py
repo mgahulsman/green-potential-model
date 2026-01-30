@@ -118,3 +118,14 @@ def process_restrictions(buffer_settings):
 
         combined_gdf.to_file(output_path, driver="GeoJSON")
         logging.info(f"{'FILE_SAVE':<20} | {output_filename} saved \n")
+
+
+if __name__ == "__main__":
+    process_restrictions(
+        buffer_settings={
+            "water": 0.00,
+            "buildings": 0.20,
+            "infra": 0.00,
+            "tree_restrictions": 2.00,
+        }
+    )

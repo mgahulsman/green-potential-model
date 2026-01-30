@@ -23,3 +23,6 @@ htmlcov/  # Code Coverage HTML rapporten
 Thumbs.db
 
 .vscode/
+
+*.gml
+*.gfs

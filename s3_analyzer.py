@@ -2,11 +2,11 @@ import geopandas as gpd
 import pandas as pd
 import numpy as np
 import os
-import json
 import logging
 from pathlib import Path
-from datetime import datetime
 from concurrent.futures import ProcessPoolExecutor
+from sqlalchemy import create_engine
+
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +16,9 @@ class GreenPotentialAnalyzer:
         self.output_dir = output_dir
         self.output_dir.mkdir(parents=True, exist_ok=True)
         os.environ["OGR_GEOJSON_MAX_OBJ_SIZE"] = "0"
+        self.engine = create_engine(
+            "postgresql://user:pass@localhost:5432/green_potential"
+        )
 
         self.restr_gdf = gpd.read_file(restriction_path, engine="pyogrio").to_crs(
             "EPSG:28992"
@@ -95,35 +98,24 @@ class GreenPotentialAnalyzer:
         logging.info(f"{'GRID_COMPLETE':<20} | All scenarios finished for {grid_name}")
 
     def _save_results(self, gdf, sid, grid_name, info, tei, mean_sg):
-        output_path = self.output_dir / f"analysis_{grid_name}_{sid}.geojson"
+        table_name = f"analysis_{grid_name}_{sid}".lower()
+
+        gdf["tei_score"] = tei
+        gdf["mean_green_score"] = mean_sg
+
         cols = [
-            "area_total",
-            "area_restricted",
-            "tree_count",
-            "area_potential",
-            "green_score",
             "geometry",
+            "green_score",
+            "tei_score",
+            "mean_green_score",
+            "area_total",
+            "tree_count",
         ]
         if "h3_index" in gdf.columns:
             cols.append("h3_index")
 
-        final_gdf = gdf[cols].to_crs(epsg=4326)
-        result_json = json.loads(final_gdf.to_json())
-        result_json.update(
-            {
-                "tei_score": tei,
-                "mean_green_score": mean_sg,
-                "metadata": {
-                    "grid": grid_name,
-                    "scenario": sid,
-                    "timestamp": datetime.now().isoformat(),
-                },
-            }
-        )
-
-        with open(output_path, "w") as f:
-            json.dump(result_json, f)
-        logging.info(f"{'FILE_SAVE':<20} | {output_path.name}")
+        gdf[cols].to_postgis(table_name, self.engine, if_exists="replace", index=True)
+        logging.info(f"{'DB_SAVE':<20} | Tabel {table_name} succesvol gevuld")
 
 
 def run_worker(grid_file, restriction_file, output_dir):

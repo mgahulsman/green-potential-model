@@ -4,10 +4,13 @@ const MAP_SETTINGS = {
     tiles: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
 };
 
+const API_BASE = "http://localhost:8000/api";
+
 const DATA_PATHS = {
-    grids: (name) => `../data/raw/grid/${name}.geojson`,
-    restrictions: '../data/processed/restrictions/restr_w000b020r000t200.geojson',
-    results: (grid, scenario) => `../data/processed/final_results/analysis_${grid}_${scenario}.geojson`
+    grids: (name) => `${API_BASE}/results/${name}/s1`,
+    // TODO: This is not correct yet
+    restrictions: `${API_BASE}/results/delft_municipality/s2`,
+    results: (grid, scenario) => `${API_BASE}/results/${grid}/${scenario}`
 };
 
 const STYLE_PALETTE = {

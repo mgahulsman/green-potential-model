@@ -27,3 +27,5 @@ Thumbs.db
 *.gml
 *.gfs
 data/
+
+postgres_data/

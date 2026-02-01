@@ -13,6 +13,18 @@ app.add_middleware(
 engine = create_engine("postgresql://user:pass@localhost:5432/green_potential")
 
 
+@app.get("/api/restrictions")
+def get_restrictions():
+    gdf = gpd.read_postgis(
+        "SELECT * FROM restrictions_test", engine, geom_col="geometry"
+    )
+
+    if gdf.crs != "EPSG:4326":
+        gdf = gdf.to_crs(epsg=4326)
+
+    return gdf.__geo_interface__
+
+
 @app.get("/api/results/{grid}/{scenario}")
 def get_results(grid: str, scenario: str):
     table_name = f"analysis_{grid}_{scenario}".lower()

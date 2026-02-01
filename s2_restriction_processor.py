@@ -1,8 +1,9 @@
-import os
 import logging
+from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 from datetime import datetime
+from sqlalchemy import create_engine
 
 
 def get_buffer_code(val):
@@ -34,12 +35,13 @@ def select_restriction_infra(df):
 
 
 def process_restrictions(buffer_settings):
-    base_folder = "C:/Users/maart/EigenMappen/Studie/laatste_bachelor_semester/bep/green-potential-model/data/"
-    raw_path = base_folder + "raw/restrictions/"
+    engine = create_engine("postgresql://user:pass@localhost:5432/green_potential")
 
-    municipality_gdf = gpd.read_file(
-        base_folder + "raw/grid/delft_municipality.geojson", engine="pyogrio"
-    )
+    base_folder = Path(__file__).resolve().parent / "data"
+    raw_path = base_folder / "raw/restrictions"
+    municipality_path = base_folder / "raw/grid/delft_municipality.geojson"
+
+    municipality_gdf = gpd.read_file(municipality_path, engine="pyogrio")
     if municipality_gdf.crs != "EPSG:28992":
         municipality_gdf = municipality_gdf.to_crs("EPSG:28992")
 
@@ -50,17 +52,16 @@ def process_restrictions(buffer_settings):
         "bgt_vegetatieobject.gml",
     ]
     labels = ["water", "buildings", "infra", "tree_restrictions"]
-
     processed_layers = []
 
     logging.info(f"{'RESTRICTIONS':<20} | Start processing of {len(files)} layers")
 
     for file, label in zip(files, labels):
         layer_start = datetime.now()
-        path = raw_path + file
+        path = raw_path / file
 
         try:
-            if not os.path.exists(path):
+            if not path.exists():
                 logging.warning(f"{'FILE_MISSING':<20} | {file} not found")
                 continue
 
@@ -70,31 +71,30 @@ def process_restrictions(buffer_settings):
             elif gdf.crs != "EPSG:28992":
                 gdf = gdf.to_crs("EPSG:28992")
 
-            # Specifieke filters
             if label == "infra":
                 gdf = select_restriction_infra(gdf)
             elif label == "tree_restrictions":
                 gdf = gdf.loc[gdf["plus-type"] == "boom"]
-                # Voeg boompunten toe aan de lijst
                 tree_points = gpd.GeoDataFrame(
                     {
                         "layer": ["tree_points"],
                         "geometry": [gdf.geometry.centroid.union_all()],
                     },
                     crs="EPSG:28992",
-                )
+                ).to_crs("EPSG:4326")
                 processed_layers.append(tree_points)
 
-            # Buffer toepassen
             dist = buffer_settings[label]
             if dist > 0:
                 gdf["geometry"] = gdf.geometry.buffer(dist)
 
-            # Samenvoegen tot één polygoon per laag
             union_gdf = gpd.GeoDataFrame(
                 {"layer": [label], "geometry": [gdf.union_all()]}, crs="EPSG:28992"
             )
+            union_gdf = union_gdf.clip(municipality_gdf).to_crs("EPSG:4326")
+
             processed_layers.append(union_gdf)
+            # union_gdf.to_postgis(f"layer_{label}", engine, if_exists="replace", index=False)
 
             duration = (datetime.now() - layer_start).total_seconds()
             logging.info(
@@ -106,21 +106,26 @@ def process_restrictions(buffer_settings):
 
     if processed_layers:
         combined_gdf = gpd.GeoDataFrame(
-            pd.concat(processed_layers, ignore_index=True), crs="EPSG:28992"
+            pd.concat(processed_layers, ignore_index=True), crs="EPSG:4326"
         )
         combined_gdf = combined_gdf.clip(municipality_gdf)
         combined_gdf = combined_gdf.to_crs(epsg=4326)
-
-        output_filename = create_output_name(buffer_settings)
-        output_path = base_folder + "processed/restrictions/" + output_filename
-
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-
-        combined_gdf.to_file(output_path, driver="GeoJSON")
-        logging.info(f"{'FILE_SAVE':<20} | {output_filename} saved \n")
+        # union = combined_gdf.union_all()
+        combined_gdf.to_postgis(
+            "restrictions_test", engine, if_exists="replace", index=True
+        )
+        logging.info(
+            f"{'DB_SAVE':<20} | Data succesvol opgeslagen in tabel 'restrictions'"
+        )
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%H:%M:%S",
+    )
+
     process_restrictions(
         buffer_settings={
             "water": 0.00,

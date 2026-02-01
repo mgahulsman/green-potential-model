@@ -14,6 +14,7 @@ dependencies = [
     "mypy>=1.18.2",
     "psycopg2-binary>=2.9.11",
     "sqlalchemy>=2.0.46",
+    "topojson>=1.10",
     "uvicorn>=0.38.0",
 ]
 

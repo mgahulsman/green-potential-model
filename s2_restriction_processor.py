@@ -3,6 +3,7 @@ import logging
 import geopandas as gpd
 import pandas as pd
 from datetime import datetime
+import topojson as tp
 
 
 def get_buffer_code(val):
@@ -70,12 +71,10 @@ def process_restrictions(buffer_settings):
             elif gdf.crs != "EPSG:28992":
                 gdf = gdf.to_crs("EPSG:28992")
 
-            # Specifieke filters
             if label == "infra":
                 gdf = select_restriction_infra(gdf)
             elif label == "tree_restrictions":
                 gdf = gdf.loc[gdf["plus-type"] == "boom"]
-                # Voeg boompunten toe aan de lijst
                 tree_points = gpd.GeoDataFrame(
                     {
                         "layer": ["tree_points"],
@@ -85,12 +84,10 @@ def process_restrictions(buffer_settings):
                 )
                 processed_layers.append(tree_points)
 
-            # Buffer toepassen
             dist = buffer_settings[label]
             if dist > 0:
                 gdf["geometry"] = gdf.geometry.buffer(dist)
 
-            # Samenvoegen tot één polygoon per laag
             union_gdf = gpd.GeoDataFrame(
                 {"layer": [label], "geometry": [gdf.union_all()]}, crs="EPSG:28992"
             )
@@ -111,16 +108,31 @@ def process_restrictions(buffer_settings):
         combined_gdf = combined_gdf.clip(municipality_gdf)
         combined_gdf = combined_gdf.to_crs(epsg=4326)
 
-        output_filename = create_output_name(buffer_settings)
-        output_path = base_folder + "processed/restrictions/" + output_filename
-
+        output_filename = create_output_name(buffer_settings).replace(
+            ".geojson", ".topojson"
+        )
+        output_path = os.path.join(
+            base_folder, "processed/restrictions/", output_filename
+        )
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-        combined_gdf.to_file(output_path, driver="GeoJSON")
-        logging.info(f"{'FILE_SAVE':<20} | {output_filename} saved \n")
+        topo = tp.Topology(
+            combined_gdf,
+            prequantize=1e5,
+            topology=True,  # Forceert topologie berekening
+        )
+
+        topo.to_json(output_path)
+        logging.info(f"{'FILE_SAVE':<20} | {output_filename} saved as TopoJSON \n")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%H:%M:%S",
+    )
+
     process_restrictions(
         buffer_settings={
             "water": 0.00,

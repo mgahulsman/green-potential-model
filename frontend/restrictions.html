@@ -1,24 +1,51 @@
 <!DOCTYPE html>
 <html>
-<head><title>GP - Restrictions</title><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" /><link rel="stylesheet" href="css/style.css"></head>
+<head>
+    <title>GP - Restrictions</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
 <body>
-    <nav><a href="index.html">Home</a><a href="grids.html">Grids</a><a href="restrictions.html">Restrictions</a><a href="results.html">Results</a></nav>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="grids.html">Grids</a>
+        <a href="restrictions.html">Restrictions</a>
+        <a href="results.html">Results</a>
+    </nav>
     <div class="dashboard">
         <h3>Physical Constraints</h3>
         <p>Restriction areas ($A_{res}$) where planting is technically unfeasible.</p>
         <div id="legend"></div>
     </div>
     <div id="map"></div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="js/config.js"></script><script src="js/layerManager.js"></script>
+
+    <script src="https://unpkg.com/topojson-client@3"></script>
+
+    <script src="js/config.js"></script>
+    <script src="js/layerManager.js"></script>
+
     <script>
+        // Nu 'L' is ingeladen via leaflet.js, werkt dit weer
         const map = L.map('map').setView(MAP_SETTINGS.center, 14);
         L.tileLayer(MAP_SETTINGS.tiles).addTo(map);
+
         async function load() {
-            const data = await fetchGeoJSON(DATA_PATHS.restrictions);
-            L.geoJson(data, {
-                style: (f) => ({color: STYLE_PALETTE[f.properties.layer], weight: 1, fillOpacity: 0.6}),
-                pointToLayer: (f, ll) => L.circleMarker(ll, {radius: 2, fillColor: STYLE_PALETTE.tree_points, stroke: false, fillOpacity: 1})
+            const topoData = await fetchGeoJSON(DATA_PATHS.restrictions);
+            if (!topoData) return;
+
+            // Haal de laagnaam dynamisch op uit het TopoJSON object
+            const layerName = Object.keys(topoData.objects)[0];
+            const geojson = topojson.feature(topoData, topoData.objects[layerName]);
+
+            L.geoJson(geojson, {
+                style: (f) => ({
+                    // Gebruik de STYLE_PALETTE uit config.js
+                    color: STYLE_PALETTE[f.properties.layer] || '#7f8c8d',
+                    weight: 1,
+                    fillOpacity: 0.6
+                })
             }).addTo(map);
         }
         load();

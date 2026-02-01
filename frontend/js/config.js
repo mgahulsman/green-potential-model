@@ -6,7 +6,7 @@ const MAP_SETTINGS = {
 
 const DATA_PATHS = {
     grids: (name) => `../data/raw/grid/${name}.geojson`,
-    restrictions: '../data/processed/restrictions/restr_w000b020r000t200.geojson',
+    restrictions: '../data/processed/restrictions/restr_w000b020r000t200.topojson',
     results: (grid, scenario) => `../data/processed/final_results/analysis_${grid}_${scenario}.geojson`
 };
 
